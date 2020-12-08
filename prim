@@ -1,0 +1,119 @@
+使用邻接矩阵存储个顶点之前的权值，并使用随机算法生成权值，使用贪心法求最小生成树。
+Prim适用于稠密图即边多的图，Kruskal适用于稀疏图即边少的图。
+本次实验选择Prim算法。
+算法具体过程为：使用bool数组区分顶点集合U和未加入的顶点集合V-U
+选定一个顶点把所相邻的顶点权值加入数组lowcost，选出权值最小的顶点后加入集合U，此顶点与V-U的权值与lowcost进行比较更新lowcost,循环以上步骤直到所有顶点加入集合U。
+在进行Prim算法时使用clock()函数进行开始与结束的计时。
+最后并进行绘图，顶点数与运行时间的线性关系，验证时间复杂度。
+
+
+
+基本算法代码：
+#include <iostream>
+#include<time.h>
+#include <stdlib.h>
+using namespace std;
+const int p=0x3fffffff;
+
+int main()
+{
+	
+    for(int n=5;n<=30;n+=5)//顶点的个数
+    {
+    	
+    	cout<<"树的路径为0"; 
+    	clock_t start,finish;
+		srand((int)time(NULL));//用时间做种子，伪随机 
+        int c[n][n];
+        for(int i=0;i<n;i++)
+           for(int j=0;j<n;j++)
+           {
+               if(i==j)
+                  c[i][j]=0;
+               if(i!=j)
+               {
+               	
+                   int m=rand()%90+10;//随机产生10<=X<100的数
+                    c[i][j]=m;
+                    c[j][i]=m;
+               }
+           }//创建邻接矩阵 
+           //prim算法开始 
+          start=clock();//计时开始 
+          bool s[n];//区分两个不同的集合 true false 
+          int closest[n];//
+          int lowcost[n];//连接到每个点最小的花费 
+          s[0]=true;
+          for(int i=0;i<n;i++)
+          {
+              if(i!=0)
+              {
+                  lowcost[i]=c[0][i];
+                  closest[i]=0;
+                  s[i]=false;
+              }
+              else
+              {
+              	lowcost[i]=0; 
+			  }
+          }
+          for(int i=0;i<n;i++)
+          {
+             int temp=p;
+             int t=0;
+             for(int j=0;j<n;j++)
+             {
+                 if((!s[j])&&(lowcost[j]<temp))
+                 {
+                     t=j;
+                     temp=lowcost[j];
+                 }
+             }
+             if(t==0){
+             	break;
+			 }
+                
+             s[t]=true;
+			cout<<"→"<<t;
+             for(int j=0;j<n;j++)
+             {
+                 if((!s[j])&&(c[t][j]<lowcost[j]))
+                 {
+                     lowcost[j]=c[t][j];
+                     closest[j]=t;
+					
+                 }
+
+                 
+             }
+           
+            
+                
+          }
+
+          finish=clock();//计时结束 
+           cout<<"\n顶点数为"<<n<<"的邻接矩阵为："<<endl;
+            for(int i=0;i<n;i++)
+            {
+                 for(int j=0;j<n;j++)
+           {
+               cout<<c[i][j]<<" ";
+           }
+           cout<<endl;
+            }
+   			int ans=0;
+            for(int i=0;i<n;i++)
+            { 
+            ans+=lowcost[i];
+            }
+            cout<<"n为:"<<n<<"时  最小生成树的最小权值为：";
+              cout<<ans<<endl;
+              finish=clock();
+              
+             float time=(finish-start);
+        // cout<<endl;
+        cout<<"运算时间:"<<time<<"毫秒"<<endl;
+
+    }
+    return 0;
+}
